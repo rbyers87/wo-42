@@ -268,28 +268,31 @@ export function WorkoutLogger({ workout, onClose, previousLogs, workoutLogId: in
     
     workoutLog = data;
     } else {
-      // Create new workout log
-      const { data, error: workoutError } = await supabase
-        .from('workout_logs')
-        .insert({
-          user_id: user.id,
-          workout_id: workout.id,
-          notes,
-          completed_at: new Date().toISOString(),
-          score,
-          total,
-        })
-        .select()
-        .single(); // Ensure we get the inserted row back
+// Create new workout log
+const { data, error: workoutError } = await supabase
+  .from('workout_logs')
+  .insert({
+    user_id: user.id,
+    workout_id: workout.id,
+    notes,
+    completed_at: new Date().toISOString(),
+    score,
+    total,
+  })
+  .select()
+  .maybeSingle(); // Handles 0 or 1 rows safely
 
-      if (workoutError) {
-        console.error('Error creating workout log:', workoutError);
-        throw workoutError;
-      }
+if (workoutError) {
+  console.error('Error creating workout log:', workoutError);
+  throw workoutError;
+}
 
-      workoutLog = data;
-      setWorkoutLogId(workoutLog.id); // Set the workoutLogId for future updates
-    }
+if (!data) {
+  console.warn('Workout log creation returned no data.');
+} else {
+  workoutLog = data;
+  setWorkoutLogId(workoutLog.id); // Set the workoutLogId for future updates
+}
 
     // Prepare exercise scores for upsert
     const exerciseScoresToUpsert = logs.flatMap((log, index) => {
