@@ -245,23 +245,28 @@ export function WorkoutLogger({ workout, onClose, previousLogs, workoutLogId: in
     if (workoutLogId) {
       // Update existing workout log
       const { data, error: updateError } = await supabase
-        .from('workout_logs')
-        .update({
-          notes,
-          score,
-          total,
-          completed_at: new Date().toISOString(),
-        })
-        .eq('id', workoutLogId)
-        .select()
-        .single(); // Ensure we get the updated row back
-
-      if (updateError) {
-        console.error('Error updating workout log:', updateError);
-        throw updateError;
-      }
-
-      workoutLog = data;
+      .from('workout_logs')
+      .update({
+        notes,
+        score,
+        total,
+        completed_at: new Date().toISOString(),
+      })
+      .eq('id', workoutLogId)
+      .select()
+      .maybeSingle();
+    
+    if (updateError) {
+      console.error('Error updating workout log:', updateError);
+      throw updateError;
+    }
+    
+    if (!data) {
+      console.warn('No workout log found with that ID to update.');
+      // Handle it as needed (e.g., show message to user)
+    }
+    
+    workoutLog = data;
     } else {
       // Create new workout log
       const { data, error: workoutError } = await supabase
