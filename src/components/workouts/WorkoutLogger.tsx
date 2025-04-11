@@ -265,8 +265,15 @@ if (!data) {
   console.warn('No workout log found with that ID to update.');
 } else {
   workoutLog = data;
-  // Optional: setWorkoutLogId(workoutLog.id); // Only if needed here
+
+  if (workoutLog?.id) {
+    // Optional: use workoutLog.id here if needed
+    console.log('Workout log updated with ID:', workoutLog.id);
+  } else {
+    console.warn('Updated workout log has no ID.');
+  }
 }
+
     } else {
 // Create new workout log
 const { data, error: workoutError } = await supabase
@@ -291,8 +298,14 @@ if (!data) {
   console.warn('Workout log creation returned no data.');
 } else {
   workoutLog = data;
-  setWorkoutLogId(workoutLog.id); // Set the workoutLogId for future updates
+
+  if (workoutLog?.id) {
+    setWorkoutLogId(workoutLog.id); // Safe to use .id now
+  } else {
+    console.warn('Workout log returned but has no ID.');
+  }
 }
+
 
     // Prepare exercise scores for upsert
     const exerciseScoresToUpsert = logs.flatMap((log, index) => {
