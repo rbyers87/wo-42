@@ -240,70 +240,70 @@ export function WorkoutLogger({ workout, onClose, previousLogs, workoutLogId: in
       return total + (exercise ? calculateTotal(exercise, log) : 0);
     }, 0);
 
-    let workoutLog;
+let workoutLog;
 
-    if (workoutLogId) {
-// Update existing workout log
-const { data, error: updateError } = await supabase
-  .from('workout_logs')
-  .update({
-    notes,
-    score,
-    total,
-    completed_at: new Date().toISOString(),
-  })
-  .eq('id', workoutLogId)
-  .select()
-  .maybeSingle(); // Prevents crash if no rows returned
+// Make sure workoutLogId is truthy
+if (workoutLogId) {
+  // Update existing workout log
+  const { data, error: updateError } = await supabase
+    .from('workout_logs')
+    .update({
+      notes,
+      score,
+      total,
+      completed_at: new Date().toISOString(),
+    })
+    .eq('id', workoutLogId)
+    .select()
+    .maybeSingle();
 
-if (updateError) {
-  console.error('Error updating workout log:', updateError);
-  throw updateError;
-}
-
-if (!data) {
-  console.warn('No workout log found with that ID to update.');
-} else {
-  workoutLog = data;
-
-  if (workoutLog?.id) {
-    setWorkoutLogId(workoutLog.id);
-  } else {
-    console.warn('Updated workout log has no ID.');
+  if (updateError) {
+    console.error('Error updating workout log:', updateError);
+    throw updateError;
   }
-}
+
+  if (!data) {
+    console.warn('No workout log found with that ID to update.');
+  } else {
+    workoutLog = data;
+    if (workoutLog?.id) {
+      setWorkoutLogId(workoutLog.id);
     } else {
-// Create new workout log
-const { data, error: workoutError } = await supabase
-  .from('workout_logs')
-  .insert({
-    user_id: user.id,
-    workout_id: workout.id,
-    notes,
-    completed_at: new Date().toISOString(),
-    score,
-    total,
-  })
-  .select()
-  .maybeSingle(); // Handles 0 or 1 rows safely
+      console.warn('Updated workout log has no ID.');
+    }
+  }
 
-if (workoutError) {
-  console.error('Error creating workout log:', workoutError);
-  throw workoutError;
-}
-
-if (!data) {
-  console.warn('Workout log creation returned no data.');
 } else {
-  workoutLog = data;
+  // Create new workout log
+  const { data, error: workoutError } = await supabase
+    .from('workout_logs')
+    .insert({
+      user_id: user.id,
+      workout_id: workout.id,
+      notes,
+      completed_at: new Date().toISOString(),
+      score,
+      total,
+    })
+    .select()
+    .maybeSingle();
 
-  if (workoutLog?.id) {
-    setWorkoutLogId(workoutLog.id); // Safe to use .id now
+  if (workoutError) {
+    console.error('Error creating workout log:', workoutError);
+    throw workoutError;
+  }
+
+  if (!data) {
+    console.warn('Workout log creation returned no data.');
   } else {
-    console.warn('Workout log returned but has no ID.');
+    workoutLog = data;
+    if (workoutLog?.id) {
+      setWorkoutLogId(workoutLog.id);
+    } else {
+      console.warn('New workout log has no ID.');
+    }
   }
 }
-
 
     // Prepare exercise scores for upsert
     const exerciseScoresToUpsert = logs.flatMap((log, index) => {
