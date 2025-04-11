@@ -243,30 +243,30 @@ export function WorkoutLogger({ workout, onClose, previousLogs, workoutLogId: in
     let workoutLog;
 
     if (workoutLogId) {
-      // Update existing workout log
-      const { data, error: updateError } = await supabase
-      .from('workout_logs')
-      .update({
-        notes,
-        score,
-        total,
-        completed_at: new Date().toISOString(),
-      })
-      .eq('id', workoutLogId)
-      .select()
-      .maybeSingle();
-    
-    if (updateError) {
-      console.error('Error updating workout log:', updateError);
-      throw updateError;
-    }
-    
-    if (!data) {
-      console.warn('No workout log found with that ID to update.');
-      // Handle it as needed (e.g., show message to user)
-    }
-    
-    workoutLog = data;
+// Update existing workout log
+const { data, error: updateError } = await supabase
+  .from('workout_logs')
+  .update({
+    notes,
+    score,
+    total,
+    completed_at: new Date().toISOString(),
+  })
+  .eq('id', workoutLogId)
+  .select()
+  .maybeSingle(); // Handles 0 or 1 rows safely
+
+if (updateError) {
+  console.error('Error updating workout log:', updateError);
+  throw updateError;
+}
+
+if (!data) {
+  console.warn('No workout log found with that ID to update.');
+} else {
+  workoutLog = data;
+  // Optional: setWorkoutLogId(workoutLog.id); // Only if needed here
+}
     } else {
 // Create new workout log
 const { data, error: workoutError } = await supabase
