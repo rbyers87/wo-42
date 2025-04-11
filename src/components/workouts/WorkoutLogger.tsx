@@ -254,7 +254,7 @@ const { data, error: updateError } = await supabase
   })
   .eq('id', workoutLogId)
   .select()
-  .maybeSingle(); // Handles 0 or 1 rows safely
+  .maybeSingle(); // Prevents crash if no rows returned
 
 if (updateError) {
   console.error('Error updating workout log:', updateError);
@@ -267,13 +267,11 @@ if (!data) {
   workoutLog = data;
 
   if (workoutLog?.id) {
-    // Optional: use workoutLog.id here if needed
-    console.log('Workout log updated with ID:', workoutLog.id);
+    setWorkoutLogId(workoutLog.id);
   } else {
     console.warn('Updated workout log has no ID.');
   }
 }
-
     } else {
 // Create new workout log
 const { data, error: workoutError } = await supabase
