@@ -160,7 +160,7 @@ import React, { useState, useEffect } from "react";
       if (exercisesError) return <div>Error loading exercises: {exercisesError.message}</div>;
 
       return (
-        <form onSubmit={handleSubmit} className="space-y-6 p-6 bg-white shadow-lg rounded-lg">
+        <form onSubmit={handleSubmit} className="space-y-6 p-6 bg-white dark:bg-gray-800 shadow-lg rounded-lg">
           <div className="grid grid-cols-1 gap-4">
             <div>
               <label className="block text-sm font-medium dark:text-gray-300">Name</label>
