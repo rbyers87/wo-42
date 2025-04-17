@@ -47,7 +47,7 @@ export function RecentWorkouts({ onWorkoutComplete }: RecentWorkoutsProps) {
 
   return (
     <div className="bg-white dark:bg-darkBackground dark:text-gray-100 dark:text-gray-200 rounded-lg shadow-md p-6 transition-all duration-300">
-      <h2 className="text-2xl font-bold dark:text-gray-100 mb-4">Recent Workouts</h2>
+      <h2 className="text-2xl font-bold dark:text-gray-100 mb-4">Recent Workouts (Last 7 Days)</h2>
       
       <div className="space-y-4">
         {recentWorkouts.map((log) => (
